@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {compileInjector, compileNgModule, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr} from '@angular/compiler';
 import {STRING_TYPE} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
-
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
+import {ComponentAnalysisContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
@@ -22,6 +22,7 @@ import {getSourceFile} from '../../util/src/typescript';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
+
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -95,34 +96,34 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // Extract the module declarations, imports, and exports.
     let declarationRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('declarations')) {
-      const expr = ngModule.get('declarations') !;
+      const expr = ngModule.get('declarations')!;
       const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       declarationRefs = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
     }
     let importRefs: Reference<ClassDeclaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      rawImports = ngModule.get('imports') !;
+      rawImports = ngModule.get('imports')!;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exportRefs: Reference<ClassDeclaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      rawExports = ngModule.get('exports') !;
+      rawExports = ngModule.get('exports')!;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exportRefs);
     }
     let bootstrapRefs: Reference<ClassDeclaration>[] = [];
     if (ngModule.has('bootstrap')) {
-      const expr = ngModule.get('bootstrap') !;
+      const expr = ngModule.get('bootstrap')!;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
     const id: Expression|null =
-        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id') !) : null;
+        ngModule.has('id') ? new WrappedNodeExpr(ngModule.get('id')!) : null;
 
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
@@ -150,7 +151,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const exports = exportRefs.map(exp => this._toR3Reference(exp, valueContext, typeContext));
 
     const isForwardReference = (ref: R3Reference) =>
-        isExpressionForwardReference(ref.value, node.name !, valueContext);
+        isExpressionForwardReference(ref.value, node.name!, valueContext);
     const containsForwardDecls = bootstrap.some(isForwardReference) ||
         declarations.some(isForwardReference) || imports.some(isForwardReference) ||
         exports.some(isForwardReference);
@@ -168,7 +169,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       schemas: [],
     };
 
-    const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
+    const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
     const providers = rawProviders !== null ? new WrappedNodeExpr(rawProviders) : null;
 
     // At this point, only add the module's imports as the injectors' imports. Any exported modules
@@ -176,7 +177,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // and pipes from the module exports.
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
-      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports')!));
     }
 
     if (this.routeAnalyzer !== null) {
@@ -204,6 +205,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       },
       factorySymbolName: node.name.text,
     };
+  }
+
+  registerDecorator(
+      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
+    throw new Error('method not implemented');
   }
 
   resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
@@ -250,7 +256,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
-        const declExpr = this.refEmitter.emit(decl, context) !;
+        const declExpr = this.refEmitter.emit(decl, context)!;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
             new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
@@ -324,8 +330,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       return null;
     }
 
-    const typeName = type && (ts.isIdentifier(type.typeName) && type.typeName ||
-                              ts.isQualifiedName(type.typeName) && type.typeName.right) ||
+    const typeName = type &&
+            (ts.isIdentifier(type.typeName) && type.typeName ||
+             ts.isQualifiedName(type.typeName) && type.typeName.right) ||
         null;
     if (typeName === null) {
       return null;
@@ -403,7 +410,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
       // resolution was able to descend into the function and return an object literal, a Map).
       if (entry instanceof Map && entry.has('ngModule')) {
-        entry = entry.get('ngModule') !;
+        entry = entry.get('ngModule')!;
       }
 
       if (Array.isArray(entry)) {
@@ -413,14 +420,16 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         if (!this.isClassDeclarationReference(entry)) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a class`);
+              `Value at position ${idx} in the NgModule.${arrayName}s of ${
+                  className} is not a class`);
         }
         refList.push(entry);
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a reference: ${entry}`);
+            `Value at position ${idx} in the NgModule.${arrayName}s of ${
+                className} is not a reference: ${entry}`);
       }
     });
 

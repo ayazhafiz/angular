@@ -8,10 +8,11 @@
 
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
-
 import {Reexport} from '../../imports';
+import {ComponentAnalysisContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
+
 
 export enum HandlerPrecedence {
   /**
@@ -75,6 +76,12 @@ export interface DecoratorHandler<A, M> {
    * isn't valid.
    */
   analyze(node: ClassDeclaration, metadata: M): AnalysisOutput<A>;
+
+  /**
+   * Registers information about the decorator in a `ComponentAnalysisContext`, which stores
+   * information about components discovered in the program.
+   */
+  registerDecorator(context: ComponentAnalysisContext, node: ClassDeclaration, metadata: M): void;
 
   /**
    * Perform resolution on the given decorator along with the result of analysis.
