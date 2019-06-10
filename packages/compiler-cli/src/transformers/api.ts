@@ -205,7 +205,8 @@ export interface CompilerOptions extends ts.CompilerOptions {
   /** @internal */
   collectAllErrors?: boolean;
 
-  /** An option to enable ngtsc's internal performance tracing.
+  /**
+   * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
    * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
@@ -213,7 +214,8 @@ export interface CompilerOptions extends ts.CompilerOptions {
    *
    * This is currently not exposed to users as the trace format is still unstable.
    *
-   * @internal */
+   * @internal
+   */
   tracePerformance?: string;
 
   /**
@@ -310,8 +312,12 @@ export interface TsEmitArguments {
   customTransformers?: ts.CustomTransformers;
 }
 
-export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
-export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
+export interface TsEmitCallback {
+  (args: TsEmitArguments): ts.EmitResult;
+}
+export interface TsMergeEmitResultsCallback {
+  (results: ts.EmitResult[]): ts.EmitResult;
+}
 
 export interface LibrarySummary {
   fileName: string;
@@ -403,14 +409,14 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback,
-        mergeEmitResultsCallback}?: {
-    emitFlags?: EmitFlags,
-    cancellationToken?: ts.CancellationToken,
-    customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback,
-    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-  }): ts.EmitResult;
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback, mergeEmitResultsCallback}?:
+           {
+             emitFlags?: EmitFlags,
+             cancellationToken?: ts.CancellationToken,
+             customTransformers?: CustomTransformers,
+             emitCallback?: TsEmitCallback,
+             mergeEmitResultsCallback?: TsMergeEmitResultsCallback
+           }): ts.EmitResult;
 
   /**
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
