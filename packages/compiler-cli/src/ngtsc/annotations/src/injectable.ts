@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
 import {ComponentAnalysisContext} from '../../indexer';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, validateConstructorDependencies} from './util';
 
@@ -74,8 +76,7 @@ export class InjectableDecoratorHandler implements
     }
     return {
       name: 'ngInjectableDef',
-      initializer: res.expression,
-      statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }
@@ -129,8 +130,7 @@ function extractInjectableMetadata(
       name,
       type,
       typeArgumentCount,
-      providedIn: new LiteralExpr(null),
-      ctorDeps,
+      providedIn: new LiteralExpr(null), ctorDeps,
     };
   } else if (decorator.args.length === 1) {
     const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
@@ -159,12 +159,12 @@ function extractInjectableMetadata(
     const meta = reflectObjectLiteral(metaNode);
     let providedIn: Expression = new LiteralExpr(null);
     if (meta.has('providedIn')) {
-      providedIn = new WrappedNodeExpr(meta.get('providedIn')!);
+      providedIn = new WrappedNodeExpr(meta.get('providedIn') !);
     }
 
     let userDeps: R3DependencyMetadata[]|undefined = undefined;
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
-      const depsExpr = meta.get('deps')!;
+      const depsExpr = meta.get('deps') !;
       if (!ts.isArrayLiteralExpression(depsExpr)) {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
@@ -180,7 +180,7 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useValue: new WrappedNodeExpr(meta.get('useValue')!),
+        useValue: new WrappedNodeExpr(meta.get('useValue') !),
       };
     } else if (meta.has('useExisting')) {
       return {
@@ -189,7 +189,7 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useExisting: new WrappedNodeExpr(meta.get('useExisting')!),
+        useExisting: new WrappedNodeExpr(meta.get('useExisting') !),
       };
     } else if (meta.has('useClass')) {
       return {
@@ -198,20 +198,17 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useClass: new WrappedNodeExpr(meta.get('useClass')!),
-        userDeps,
+        useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps,
       };
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
-      const factory = new WrappedNodeExpr(meta.get('useFactory')!);
+      const factory = new WrappedNodeExpr(meta.get('useFactory') !);
       return {
         name,
         type,
         typeArgumentCount,
         providedIn,
-        useFactory: factory,
-        ctorDeps,
-        userDeps,
+        useFactory: factory, ctorDeps, userDeps,
       };
     } else {
       if (strictCtorDeps) {

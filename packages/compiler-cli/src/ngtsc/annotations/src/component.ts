@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, makeBindingParser, ParseError, parseTemplate, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
+
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {ComponentAnalysisContext} from '../../indexer';
-import {DirectiveMeta, extractDirectiveGuards, MetadataReader, MetadataRegistry} from '../../metadata';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -21,6 +22,7 @@ import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
+
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
@@ -158,10 +160,10 @@ export class ComponentDecoratorHandler implements
       } else {
         return previous;
       }
-    }, undefined)!;
+    }, undefined) !;
 
     const viewProviders: Expression|null = component.has('viewProviders') ?
-        new WrappedNodeExpr(component.get('viewProviders')!) :
+        new WrappedNodeExpr(component.get('viewProviders') !) :
         null;
 
     // Parse the template.
@@ -170,12 +172,12 @@ export class ComponentDecoratorHandler implements
     let template: ParsedTemplate;
     if (this.preanalyzeTemplateCache.has(node)) {
       // The template was parsed in preanalyze. Use it and delete it to save memory.
-      template = this.preanalyzeTemplateCache.get(node)!;
+      template = this.preanalyzeTemplateCache.get(node) !;
       this.preanalyzeTemplateCache.delete(node);
     } else {
       // The template was not already parsed. Either there's a templateUrl, or an inline template.
       if (component.has('templateUrl')) {
-        const templateUrlExpr = component.get('templateUrl')!;
+        const templateUrlExpr = component.get('templateUrl') !;
         const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
         if (typeof evalTemplateUrl !== 'string') {
           throw new FatalDiagnosticError(
@@ -220,8 +222,7 @@ export class ComponentDecoratorHandler implements
         inputs: metadata.inputs,
         outputs: metadata.outputs,
         queries: metadata.queries.map(query => query.propertyName),
-        isComponent: true,
-        ...extractDirectiveGuards(node, this.reflector),
+        isComponent: true, ...extractDirectiveGuards(node, this.reflector),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
       });
     }
@@ -267,7 +268,7 @@ export class ComponentDecoratorHandler implements
 
     let animations: Expression|null = null;
     if (component.has('animations')) {
-      animations = new WrappedNodeExpr(component.get('animations')!);
+      animations = new WrappedNodeExpr(component.get('animations') !);
     }
 
     const output = {
@@ -286,8 +287,7 @@ export class ComponentDecoratorHandler implements
           wrapDirectivesAndPipesInClosure: false,  //
           animations,
           viewProviders,
-          i18nUseExternalIds: this.i18nUseExternalIds,
-          relativeContextFilePath
+          i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
         },
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
@@ -382,7 +382,7 @@ export class ComponentDecoratorHandler implements
 
       // The BoundTarget knows which directives and pipes matched the template.
       const usedDirectives = bound.getUsedDirectives();
-      const usedPipes = bound.getUsedPipes().map(name => pipes.get(name)!);
+      const usedPipes = bound.getUsedPipes().map(name => pipes.get(name) !);
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
@@ -437,15 +437,14 @@ export class ComponentDecoratorHandler implements
     }
     return {
       name: 'ngComponentDef',
-      initializer: res.expression,
-      statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }
 
   private _resolveLiteral(decorator: Decorator): ts.ObjectLiteralExpression {
     if (this.literalCache.has(decorator)) {
-      return this.literalCache.get(decorator)!;
+      return this.literalCache.get(decorator) !;
     }
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new FatalDiagnosticError(
@@ -467,7 +466,7 @@ export class ComponentDecoratorHandler implements
       component: Map<string, ts.Expression>, field: string, enumSymbolName: string): number|null {
     let resolved: number|null = null;
     if (component.has(field)) {
-      const expr = component.get(field)!;
+      const expr = component.get(field) !;
       const value = this.evaluator.evaluate(expr) as any;
       if (value instanceof EnumValue && isAngularCoreReference(value.enumRef, enumSymbolName)) {
         resolved = value.resolved as number;
@@ -486,7 +485,7 @@ export class ComponentDecoratorHandler implements
       return extraUrls.length > 0 ? extraUrls : null;
     }
 
-    const styleUrlsExpr = component.get('styleUrls')!;
+    const styleUrlsExpr = component.get('styleUrls') !;
     const styleUrls = this.evaluator.evaluate(styleUrlsExpr);
     if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
       throw new FatalDiagnosticError(
@@ -501,7 +500,7 @@ export class ComponentDecoratorHandler implements
       containingFile: string): Promise<ParsedTemplate|null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
-      const templateUrlExpr = component.get('templateUrl')!;
+      const templateUrlExpr = component.get('templateUrl') !;
       const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
@@ -551,7 +550,7 @@ export class ComponentDecoratorHandler implements
     if (!component.has('template')) {
       return null;
     }
-    const templateExpr = component.get('template')!;
+    const templateExpr = component.get('template') !;
     let templateStr: string;
     let templateUrl: string = '';
     let templateRange: LexerRange|undefined = undefined;
@@ -581,7 +580,7 @@ export class ComponentDecoratorHandler implements
       templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
-      const expr = component.get('preserveWhitespaces')!;
+      const expr = component.get('preserveWhitespaces') !;
       const value = this.evaluator.evaluate(expr);
       if (typeof value !== 'boolean') {
         throw new FatalDiagnosticError(
@@ -592,7 +591,7 @@ export class ComponentDecoratorHandler implements
 
     let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
     if (component.has('interpolation')) {
-      const expr = component.get('interpolation')!;
+      const expr = component.get('interpolation') !;
       const value = this.evaluator.evaluate(expr);
       if (!Array.isArray(value) || value.length !== 2 ||
           !value.every(element => typeof element === 'string')) {
@@ -600,17 +599,15 @@ export class ComponentDecoratorHandler implements
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
             'interpolation must be an array with 2 elements of string type');
       }
-      interpolation = InterpolationConfig.fromArray(value as [string, string]);
+      interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
 
     return {
-      interpolation,
-      ...parseTemplate(templateStr, templateUrl, {
-        preserveWhitespaces,
-        interpolationConfig: interpolation,
-        range: templateRange,
-        escapedString
-      }),
+        interpolation, ...parseTemplate(templateStr, templateUrl, {
+          preserveWhitespaces,
+          interpolationConfig: interpolation,
+          range: templateRange, escapedString
+        }),
     };
   }
 
@@ -620,7 +617,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // Figure out what file is being imported.
-    return this.moduleResolver.resolveModuleName(expr.value.moduleName!, origin);
+    return this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
   }
 
   private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {

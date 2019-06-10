@@ -8,13 +8,15 @@
 
 import {GeneratedFile} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
+
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
-import {checkForPrivateExports, findFlatIndexEntryPoint, FlatIndexGenerator, ReferenceGraph} from './entry_point';
+import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
 import {ComponentAnalysis} from './indexer';
@@ -24,13 +26,13 @@ import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
-import {entryPointKeyFor, NgModuleRouteAnalyzer} from './routing';
+import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
-import {FactoryGenerator, FactoryInfo, generatedFactoryTransform, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator} from './shims';
+import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, TypeCheckShimGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
-import {declarationTransformFactory, IvyCompilation, ivyTransformFactory} from './transform';
+import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {aliasTransformFactory} from './transform/src/alias';
-import {TypeCheckContext, typeCheckFilePath, TypeCheckingConfig} from './typecheck';
+import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
 
@@ -99,8 +101,8 @@ export class NgtscProgram implements api.Program {
       this.sourceToFactorySymbols = new Map<string, Set<string>>();
       factoryFileMap.forEach((sourceFilePath, factoryPath) => {
         const moduleSymbolNames = new Set<string>();
-        this.sourceToFactorySymbols!.set(sourceFilePath, moduleSymbolNames);
-        this.factoryToSourceInfo!.set(factoryPath, {sourceFilePath, moduleSymbolNames});
+        this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
+        this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
 
       const factoryFileNames = Array.from(factoryFileMap.keys());
@@ -163,9 +165,7 @@ export class NgtscProgram implements api.Program {
     }
   }
 
-  getTsProgram(): ts.Program {
-    return this.tsProgram;
-  }
+  getTsProgram(): ts.Program { return this.tsProgram; }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
                          undefined): ReadonlyArray<ts.Diagnostic> {
@@ -195,8 +195,8 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgSemanticDiagnostics(
-      fileName?: string|undefined, cancellationToken?: ts.CancellationToken|undefined):
-      ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+      fileName?: string|undefined, cancellationToken?: ts.CancellationToken|
+                                   undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
     const compilation = this.ensureAnalyzed();
     const diagnostics = [...compilation.diagnostics, ...this.getTemplateDiagnostics()];
     if (this.entryPoint !== null && this.exportReferenceGraph !== null) {
@@ -215,7 +215,7 @@ export class NgtscProgram implements api.Program {
                           .filter(file => !file.fileName.endsWith('.d.ts'))
                           .map(file => {
                             const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
-                            let analysisPromise = this.compilation!.analyzeAsync(file);
+                            let analysisPromise = this.compilation !.analyzeAsync(file);
                             if (analysisPromise === undefined) {
                               this.perfRecorder.stop(analyzeFileSpan);
                             } else if (this.perfRecorder.enabled) {
@@ -263,7 +263,7 @@ export class NgtscProgram implements api.Program {
     }
 
     this.ensureAnalyzed();
-    return this.routeAnalyzer!.listLazyRoutes(entryRoute);
+    return this.routeAnalyzer !.listLazyRoutes(entryRoute);
   }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
@@ -286,7 +286,7 @@ export class NgtscProgram implements api.Program {
           .filter(file => !file.fileName.endsWith('.d.ts'))
           .forEach(file => {
             const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
-            this.compilation!.analyzeSync(file);
+            this.compilation !.analyzeSync(file);
             this.perfRecorder.stop(analyzeFileSpan);
           });
       this.perfRecorder.stop(analyzeSpan);
@@ -308,8 +308,8 @@ export class NgtscProgram implements api.Program {
 
     const writeFile: ts.WriteFileCallback =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: ((message: string) => void)|undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>|undefined) => {
+         onError: ((message: string) => void) | undefined,
+         sourceFiles: ReadonlyArray<ts.SourceFile>| undefined) => {
           if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
             data = nocollapseHack(data);
           }
@@ -359,8 +359,7 @@ export class NgtscProgram implements api.Program {
         program: this.tsProgram,
         host: this.host,
         options: this.options,
-        emitOnlyDtsFiles: false,
-        writeFile,
+        emitOnlyDtsFiles: false, writeFile,
         customTransformers: {
           before: beforeTransforms,
           after: customTransforms && customTransforms.afterTs,
@@ -415,7 +414,7 @@ export class NgtscProgram implements api.Program {
 
     // Execute the typeCheck phase of each decorator in the program.
     const prepSpan = this.perfRecorder.start('typeCheckPrep');
-    const ctx = new TypeCheckContext(typeCheckingConfig, this.refEmitter!, this.typeCheckFilePath);
+    const ctx = new TypeCheckContext(typeCheckingConfig, this.refEmitter !, this.typeCheckFilePath);
     compilation.typeCheck(ctx);
     this.perfRecorder.stop(prepSpan);
 
@@ -429,9 +428,7 @@ export class NgtscProgram implements api.Program {
     return diagnostics;
   }
 
-  getComponentAnalysis(): ComponentAnalysis[] {
-    throw new Error('Method not implemented.');
-  }
+  getComponentAnalysis(): ComponentAnalysis[] { throw new Error('Method not implemented.'); }
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
@@ -497,7 +494,7 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(this.reflector, evaluator, this.isCore),
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, metaRegistry, this.metaReader!, scopeRegistry, this.isCore,
+          this.reflector, evaluator, metaRegistry, this.metaReader !, scopeRegistry, this.isCore,
           this.resourceManager, this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
           this.refEmitter, this.defaultImportTracker),
@@ -551,16 +548,11 @@ export class NgtscProgram implements api.Program {
   }
 }
 
-const defaultEmitCallback: api.TsEmitCallback = ({
-  program,
-  targetSourceFile,
-  writeFile,
-  cancellationToken,
-  emitOnlyDtsFiles,
-  customTransformers
-}) =>
-    program.emit(
-        targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+const defaultEmitCallback: api.TsEmitCallback =
+    ({program, targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
+      customTransformers}) =>
+        program.emit(
+            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
 function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
   const diagnostics: ts.Diagnostic[] = [];

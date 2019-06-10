@@ -6,16 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDirectiveFromMetadata, ConstantPool, Expression, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {ConstantPool, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {ComponentAnalysisContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
@@ -68,8 +70,7 @@ export class DirectiveDecoratorHandler implements
         inputs: analysis.inputs,
         outputs: analysis.outputs,
         queries: analysis.queries.map(query => query.propertyName),
-        isComponent: false,
-        ...extractDirectiveGuards(node, this.reflector),
+        isComponent: false, ...extractDirectiveGuards(node, this.reflector),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
       });
     }
@@ -114,7 +115,7 @@ export class DirectiveDecoratorHandler implements
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    defaultSelector: string|null = null): {
+    defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   decoratedElements: ClassMember[],
@@ -155,10 +156,9 @@ export function extractDirectiveMetadata(
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', evaluator);
-  const outputsFromFields =
-      parseDecoratedFields(
-          filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator,
-          resolveOutput) as {[field: string]: string};
+  const outputsFromFields = parseDecoratedFields(
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator,
+      resolveOutput) as{[field: string]: string};
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -180,7 +180,7 @@ export function extractDirectiveMetadata(
 
   if (directive.has('queries')) {
     const queriesFromDecorator =
-        extractQueriesFromDecorator(directive.get('queries')!, reflector, evaluator, isCore);
+        extractQueriesFromDecorator(directive.get('queries') !, reflector, evaluator, isCore);
     queries.push(...queriesFromDecorator.content);
     viewQueries.push(...queriesFromDecorator.view);
   }
@@ -188,7 +188,7 @@ export function extractDirectiveMetadata(
   // Parse the selector.
   let selector = defaultSelector;
   if (directive.has('selector')) {
-    const expr = directive.get('selector')!;
+    const expr = directive.get('selector') !;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
       throw new FatalDiagnosticError(
@@ -204,7 +204,7 @@ export function extractDirectiveMetadata(
   const host = extractHostBindings(decoratedElements, evaluator, coreModule, directive);
 
   const providers: Expression|null =
-      directive.has('providers') ? new WrappedNodeExpr(directive.get('providers')!) : null;
+      directive.has('providers') ? new WrappedNodeExpr(directive.get('providers') !) : null;
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
   const usesOnChanges = members.some(
@@ -214,7 +214,7 @@ export function extractDirectiveMetadata(
   // Parse exportAs.
   let exportAs: string[]|null = null;
   if (directive.has('exportAs')) {
-    const expr = directive.get('exportAs')!;
+    const expr = directive.get('exportAs') !;
     const resolved = evaluator.evaluate(expr);
     if (typeof resolved !== 'string') {
       throw new FatalDiagnosticError(
@@ -227,22 +227,15 @@ export function extractDirectiveMetadata(
   const usesInheritance = reflector.hasBaseClass(clazz);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
-    deps: getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore),
-    host,
+    deps: getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore), host,
     lifecycle: {
-      usesOnChanges,
+        usesOnChanges,
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
-    outputs: {...outputsFromMeta, ...outputsFromFields},
-    queries,
-    viewQueries,
-    selector,
+    outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     type: new WrappedNodeExpr(clazz.name),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: null!,
-    usesInheritance,
-    exportAs,
-    providers
+    typeSourceSpan: null !, usesInheritance, exportAs, providers
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -285,11 +278,11 @@ export function extractQueryMetadata(
     }
     const options = reflectObjectLiteral(optionsExpr);
     if (options.has('read')) {
-      read = new WrappedNodeExpr(options.get('read')!);
+      read = new WrappedNodeExpr(options.get('read') !);
     }
 
     if (options.has('descendants')) {
-      const descendantsValue = evaluator.evaluate(options.get('descendants')!);
+      const descendantsValue = evaluator.evaluate(options.get('descendants') !);
       if (typeof descendantsValue !== 'boolean') {
         throw new Error(`@${name} options.descendants must be a boolean`);
       }
@@ -297,7 +290,7 @@ export function extractQueryMetadata(
     }
 
     if (options.has('static')) {
-      const staticValue = evaluator.evaluate(options.get('static')!);
+      const staticValue = evaluator.evaluate(options.get('static') !);
       if (typeof staticValue !== 'boolean') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} options.static must be a boolean`);
@@ -374,7 +367,7 @@ export function parseFieldArrayValue(
   }
 
   // Resolve the field of interest from the directive metadata to a string[].
-  const value = evaluator.evaluate(directive.get(field)!);
+  const value = evaluator.evaluate(directive.get(field) !);
   if (!isStringArrayOrDie(value, field)) {
     throw new Error(`Failed to resolve @Directive.${field}`);
   }
@@ -394,13 +387,15 @@ function parseFieldToPropertyMapping(
     return EMPTY_OBJECT;
   }
 
-  return metaValues.reduce((results, value) => {
-    // Either the value is 'field' or 'field: property'. In the first case, `property` will
-    // be undefined, in which case the field name should also be used as the property name.
-    const [field, property] = value.split(':', 2).map(str => str.trim());
-    results[field] = property || field;
-    return results;
-  }, {} as {[field: string]: string});
+  return metaValues.reduce(
+      (results, value) => {
+        // Either the value is 'field' or 'field: property'. In the first case, `property` will
+        // be undefined, in which case the field name should also be used as the property name.
+        const [field, property] = value.split(':', 2).map(str => str.trim());
+        results[field] = property || field;
+        return results;
+      },
+      {} as{[field: string]: string});
 }
 
 /**
@@ -410,28 +405,30 @@ function parseFieldToPropertyMapping(
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], evaluator: PartialEvaluator,
     mapValueResolver: (publicName: string, internalName: string) =>
-        string | [string, string]): {[field: string]: string|[string, string]} {
-  return fields.reduce((results, field) => {
-    const fieldName = field.member.name;
-    field.decorators.forEach(decorator => {
-      // The decorator either doesn't have an argument (@Input()) in which case the property
-      // name is used, or it has one argument (@Output('named')).
-      if (decorator.args == null || decorator.args.length === 0) {
-        results[fieldName] = fieldName;
-      } else if (decorator.args.length === 1) {
-        const property = evaluator.evaluate(decorator.args[0]);
-        if (typeof property !== 'string') {
-          throw new Error(`Decorator argument must resolve to a string`);
-        }
-        results[fieldName] = mapValueResolver(property, fieldName);
-      } else {
-        // Too many arguments.
-        throw new Error(
-            `Decorator must have 0 or 1 arguments, got ${decorator.args.length} argument(s)`);
-      }
-    });
-    return results;
-  }, {} as {[field: string]: string | [string, string]});
+        string | [string, string]): {[field: string]: string | [string, string]} {
+  return fields.reduce(
+      (results, field) => {
+        const fieldName = field.member.name;
+        field.decorators.forEach(decorator => {
+          // The decorator either doesn't have an argument (@Input()) in which case the property
+          // name is used, or it has one argument (@Output('named')).
+          if (decorator.args == null || decorator.args.length === 0) {
+            results[fieldName] = fieldName;
+          } else if (decorator.args.length === 1) {
+            const property = evaluator.evaluate(decorator.args[0]);
+            if (typeof property !== 'string') {
+              throw new Error(`Decorator argument must resolve to a string`);
+            }
+            results[fieldName] = mapValueResolver(property, fieldName);
+          } else {
+            // Too many arguments.
+            throw new Error(
+                `Decorator must have 0 or 1 arguments, got ${decorator.args.length} argument(s)`);
+          }
+        });
+        return results;
+      },
+      {} as{[field: string]: string | [string, string]});
 }
 
 function resolveInput(publicName: string, internalName: string): [string, string] {
@@ -447,7 +444,7 @@ export function queriesFromFields(
     evaluator: PartialEvaluator): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
     // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
-    if (member.decorators!.some(v => v.name === 'Input')) {
+    if (member.decorators !.some(v => v.name === 'Input')) {
       throw new Error(`Cannot combine @Input decorators with query decorators`);
     }
     if (decorators.length !== 1) {
@@ -471,11 +468,11 @@ type StringMap<T> = {
 };
 
 export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined,
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string | undefined,
     metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let hostMetadata: StringMap<string|Expression> = {};
   if (metadata && metadata.has('host')) {
-    const expr = metadata.get('host')!;
+    const expr = metadata.get('host') !;
     const hostMetaMap = evaluator.evaluate(expr);
     if (!(hostMetaMap instanceof Map)) {
       throw new FatalDiagnosticError(
@@ -508,12 +505,12 @@ export function extractHostBindings(
   const bindings = parseHostBindings(hostMetadata);
 
   // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  const errors = verifyHostBindings(bindings, /* sourceSpan */ null!);
+  const errors = verifyHostBindings(bindings, /* sourceSpan */ null !);
   if (errors.length > 0) {
     throw new FatalDiagnosticError(
         // TODO: provide more granular diagnostic and output specific host expression that triggered
         // an error instead of the whole host object
-        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata!.get('host')!,
+        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata !.get('host') !,
         errors.map((error: ParseError) => error.msg).join('\n'));
   }
 

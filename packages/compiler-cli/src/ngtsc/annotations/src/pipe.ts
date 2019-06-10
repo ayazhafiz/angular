@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compilePipeFromMetadata, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {ComponentAnalysisContext} from '../../indexer';
@@ -15,6 +16,7 @@ import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
 
@@ -70,7 +72,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
       throw new FatalDiagnosticError(
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
-    const pipeNameExpr = pipe.get('name')!;
+    const pipeNameExpr = pipe.get('name') !;
     const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
       throw new FatalDiagnosticError(
@@ -81,7 +83,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
 
     let pure = true;
     if (pipe.has('pure')) {
-      const expr = pipe.get('pure')!;
+      const expr = pipe.get('pure') !;
       const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
         throw new FatalDiagnosticError(
@@ -95,8 +97,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
         meta: {
           name,
           type,
-          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
-          pipeName,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
           pure,
@@ -120,8 +121,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
     return {
       name: 'ngPipeDef',
-      initializer: res.expression,
-      statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }
