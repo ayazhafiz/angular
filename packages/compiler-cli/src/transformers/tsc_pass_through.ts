@@ -31,9 +31,7 @@ export class TscPassThroughProgram implements api.Program {
         ts.createProgram(rootNames, options, host, oldProgram && oldProgram.getTsProgram());
   }
 
-  getTsProgram(): ts.Program {
-    return this.tsProgram;
-  }
+  getTsProgram(): ts.Program { return this.tsProgram; }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
                          undefined): ReadonlyArray<ts.Diagnostic> {
@@ -68,9 +66,7 @@ export class TscPassThroughProgram implements api.Program {
     return [];
   }
 
-  loadNgStructureAsync(): Promise<void> {
-    return Promise.resolve();
-  }
+  loadNgStructureAsync(): Promise<void> { return Promise.resolve(); }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
     throw new Error('Method not implemented.');
@@ -108,13 +104,8 @@ export class TscPassThroughProgram implements api.Program {
   }
 }
 
-const defaultEmitCallback: api.TsEmitCallback = ({
-  program,
-  targetSourceFile,
-  writeFile,
-  cancellationToken,
-  emitOnlyDtsFiles,
-  customTransformers
-}) =>
-    program.emit(
-        targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+const defaultEmitCallback: api.TsEmitCallback =
+    ({program, targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
+      customTransformers}) =>
+        program.emit(
+            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);

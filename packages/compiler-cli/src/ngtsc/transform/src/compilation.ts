@@ -8,15 +8,17 @@
 
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
 import {ComponentAnalysisContext} from '../../indexer';
 import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile} from '../../util/src/typescript';
+
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
 import {DtsFileTransformer} from './declaration';
 
@@ -83,17 +85,11 @@ export class IvyCompilation {
       private scopeRegistry: LocalModuleScopeRegistry) {}
 
 
-  get exportStatements(): Map<string, Map<string, [string, string]>> {
-    return this.reexportMap;
-  }
+  get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
 
-  analyzeSync(sf: ts.SourceFile): void {
-    return this.analyze(sf, false);
-  }
+  analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined {
-    return this.analyze(sf, true);
-  }
+  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
 
   private detectHandlersForClass(node: ClassDeclaration): IvyClass|null {
     // The first step is to reflect the decorators.
@@ -113,8 +109,7 @@ export class IvyCompilation {
       const isWeakHandler = handler.precedence === HandlerPrecedence.WEAK;
       const match = {
         handler,
-        analyzed: null,
-        detected,
+        analyzed: null, detected,
       };
 
       if (ivyClass === null) {
@@ -207,7 +202,7 @@ export class IvyCompilation {
             if (match.analyzed.factorySymbolName !== undefined &&
                 this.sourceToFactorySymbols !== null &&
                 this.sourceToFactorySymbols.has(sf.fileName)) {
-              this.sourceToFactorySymbols.get(sf.fileName)!.add(match.analyzed.factorySymbolName);
+              this.sourceToFactorySymbols.get(sf.fileName) !.add(match.analyzed.factorySymbolName);
             }
           } catch (err) {
             if (err instanceof FatalDiagnosticError) {
@@ -279,7 +274,7 @@ export class IvyCompilation {
               if (!this.reexportMap.has(fileName)) {
                 this.reexportMap.set(fileName, new Map<string, [string, string]>());
               }
-              const fileReexports = this.reexportMap.get(fileName)!;
+              const fileReexports = this.reexportMap.get(fileName) !;
               for (const reexport of res.reexports) {
                 fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
               }
@@ -305,7 +300,7 @@ export class IvyCompilation {
 
   private recordNgModuleScopeDependencies() {
     const recordSpan = this.perf.start('recordDependencies');
-    this.scopeRegistry!.getCompilationScopes().forEach(scope => {
+    this.scopeRegistry !.getCompilationScopes().forEach(scope => {
       const file = scope.declaration.getSourceFile();
       // Register the file containing the NgModule where the declaration is declared.
       this.incrementalState.trackFileDependency(scope.ngModule.getSourceFile(), file);
@@ -340,7 +335,7 @@ export class IvyCompilation {
       return undefined;
     }
 
-    const ivyClass = this.ivyClasses.get(original)!;
+    const ivyClass = this.ivyClasses.get(original) !;
 
     let res: CompileResult[] = [];
 
@@ -364,7 +359,7 @@ export class IvyCompilation {
     // generated, which will allow the .d.ts to be transformed later.
     const fileName = original.getSourceFile().fileName;
     const dtsTransformer = this.getDtsTransformer(fileName);
-    dtsTransformer.recordStaticField(reflectNameOfDeclaration(node)!, res);
+    dtsTransformer.recordStaticField(reflectNameOfDeclaration(node) !, res);
 
     // Return the instruction to the transformer so the fields will be added.
     return res.length > 0 ? res : undefined;
@@ -379,7 +374,7 @@ export class IvyCompilation {
     if (!isNamedClassDeclaration(original) || !this.ivyClasses.has(original)) {
       return EMPTY_ARRAY;
     }
-    const ivyClass = this.ivyClasses.get(original)!;
+    const ivyClass = this.ivyClasses.get(original) !;
     const decorators: ts.Decorator[] = [];
 
     for (const match of ivyClass.matchedHandlers) {
@@ -409,17 +404,15 @@ export class IvyCompilation {
     }
 
     // Return the transformed source.
-    return this.dtsMap.get(file.fileName)!.transform(file, context);
+    return this.dtsMap.get(file.fileName) !.transform(file, context);
   }
 
-  get diagnostics(): ReadonlyArray<ts.Diagnostic> {
-    return this._diagnostics;
-  }
+  get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }
 
   private getDtsTransformer(tsFileName: string): DtsFileTransformer {
     if (!this.dtsMap.has(tsFileName)) {
       this.dtsMap.set(tsFileName, new DtsFileTransformer(this.importRewriter));
     }
-    return this.dtsMap.get(tsFileName)!;
+    return this.dtsMap.get(tsFileName) !;
   }
 }

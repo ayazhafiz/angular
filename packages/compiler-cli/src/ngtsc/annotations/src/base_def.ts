@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileBaseDefFromMetadata, ConstantPool, makeBindingParser, R3BaseRefMetaData} from '@angular/compiler';
+import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
+
 import {ComponentAnalysisContext} from '../../indexer';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+
 import {extractHostBindings, queriesFromFields} from './directive';
 import {isAngularDecorator} from './util';
 
 
 
-function containsNgTopLevelDecorator(decorators: Decorator[]|null, isCore: boolean): boolean {
+function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
   if (!decorators) {
     return false;
   }
@@ -92,10 +94,10 @@ export class BaseDefDecoratorHandler implements
 
   analyze(node: ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
       AnalysisOutput<R3BaseRefMetaData> {
-    const analysis: R3BaseRefMetaData = {name: node.name.text, typeSourceSpan: null!};
+    const analysis: R3BaseRefMetaData = {name: node.name.text, typeSourceSpan: null !};
 
     if (metadata.inputs) {
-      const inputs = analysis.inputs = {} as {[key: string]: string | [string, string]};
+      const inputs = analysis.inputs = {} as{[key: string]: string | [string, string]};
       metadata.inputs.forEach(({decorator, property}) => {
         const propName = property.name;
         const args = decorator.args;
@@ -114,7 +116,7 @@ export class BaseDefDecoratorHandler implements
     }
 
     if (metadata.outputs) {
-      const outputs = analysis.outputs = {} as {[key: string]: string};
+      const outputs = analysis.outputs = {} as{[key: string]: string};
       metadata.outputs.forEach(({decorator, property}) => {
         const propName = property.name;
         const args = decorator.args;
@@ -161,8 +163,7 @@ export class BaseDefDecoratorHandler implements
 
     return {
       name: 'ngBaseDef',
-      initializer: expression,
-      type,
+      initializer: expression, type,
       statements: [],
     };
   }
