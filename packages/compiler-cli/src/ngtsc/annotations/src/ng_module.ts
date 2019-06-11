@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
+import {IndexingContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
@@ -24,6 +24,7 @@ import {getSourceFile} from '../../util/src/typescript';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
+
 
 
 export interface NgModuleAnalysis {
@@ -209,8 +210,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     };
   }
 
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
+  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
     throw new Error('method not implemented');
   }
 

@@ -7,13 +7,13 @@
  */
 
 import * as ts from 'typescript';
-import {ComponentAnalysisContext} from './context';
+import {IndexingContext} from './context';
 import {TemplateIdentifier} from './template';
 
 /**
- * Describes the semantic analysis of a component and its template.
+ * Describes an analyzed, indexed component and its template.
  */
-export interface ComponentAnalysis {
+export interface IndexedComponent {
   name: string;
   selector: string|null;
   declaration: ts.Declaration;
@@ -21,16 +21,16 @@ export interface ComponentAnalysis {
   content: string;
   template: {
     identifiers: TemplateIdentifier[],
-    usedComponents: ComponentAnalysis[],
+    usedComponents: IndexedComponent[],
   };
 }
 
 /**
- * Generates `ComponentAnalysis` entries from a `ComponentAnalysisContext`, which has information
+ * Generates `IndexedComponent` entries from a `IndexingContext`, which has information
  * about components discovered in the program registered in it.
  *
  * The context must be populated before `generateAnalysis` is called.
  */
-export function generateAnalysis(context: ComponentAnalysisContext): ComponentAnalysis[] {
+export function generateAnalysis(context: IndexingContext): IndexedComponent[] {
   throw new Error('Method not implemented.');
 }

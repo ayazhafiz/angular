@@ -7,17 +7,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerOptions, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Serializer, StaticSymbol, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, StaticSymbol, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {compareVersions} from '../diagnostics/typescript_version';
-import {MetadataCollector, createBundleIndexHost} from '../metadata';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
 import {NgtscProgram} from '../ngtsc/program';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
 import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
@@ -28,8 +28,7 @@ import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
 import {TscPassThroughProgram} from './tsc_pass_through';
-import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused} from './util';
-
+import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
 /**
@@ -889,8 +888,8 @@ export function checkVersion(
     disableVersionCheck: boolean | undefined) {
   if ((compareVersions(version, minVersion) < 0 || compareVersions(version, maxVersion) >= 0) &&
       !disableVersionCheck) {
-    throw new Error(`The Angular Compiler requires TypeScript >=${minVersion} and <${
-        maxVersion} but ${version} was found instead.`);
+    throw new Error(
+        `The Angular Compiler requires TypeScript >=${minVersion} and <${maxVersion} but ${version} was found instead.`);
   }
 }
 

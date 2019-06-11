@@ -7,10 +7,11 @@
  */
 
 import {GeneratedFile} from '@angular/compiler';
+import * as path from 'path';
 import * as ts from 'typescript';
+
 import {ivySwitchTransform} from '../ngtsc/switch';
 import * as api from '../transformers/api';
-
 
 
 /**

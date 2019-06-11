@@ -205,8 +205,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   /** @internal */
   collectAllErrors?: boolean;
 
-  /**
-   * An option to enable ngtsc's internal performance tracing.
+  /** An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
    * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
@@ -214,8 +213,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
    *
    * This is currently not exposed to users as the trace format is still unstable.
    *
-   * @internal
-   */
+   * @internal */
   tracePerformance?: string;
 
   /**

@@ -9,7 +9,7 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 import {Reexport} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
+import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
@@ -78,10 +78,11 @@ export interface DecoratorHandler<A, M> {
   analyze(node: ClassDeclaration, metadata: M): AnalysisOutput<A>;
 
   /**
-   * Registers information about the decorator in a `ComponentAnalysisContext`, which stores
-   * information about components discovered in the program.
+   * Registers information about the decorator for the indexing phase in a
+   * `IndexingContext`, which stores information about components discovered in the
+   * program.
    */
-  registerDecorator(context: ComponentAnalysisContext, node: ClassDeclaration, metadata: M): void;
+  index(context: IndexingContext, node: ClassDeclaration, metadata: M): void;
 
   /**
    * Perform resolution on the given decorator along with the result of analysis.

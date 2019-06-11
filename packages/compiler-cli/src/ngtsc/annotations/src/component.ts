@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
+import {IndexingContext} from '../../indexer';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, extractDirectiveGuards} from '../../metadata';
 import {flattenInheritedDirectiveMetadata} from '../../metadata/src/inheritance';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -301,8 +301,7 @@ export class ComponentDecoratorHandler implements
     return output;
   }
 
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
+  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
     throw new Error('Method not implemented.');
   }
 
