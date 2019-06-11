@@ -16,8 +16,6 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {extractHostBindings, queriesFromFields} from './directive';
 import {isAngularDecorator} from './util';
 
-
-
 function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boolean): boolean {
   if (!decorators) {
     return false;

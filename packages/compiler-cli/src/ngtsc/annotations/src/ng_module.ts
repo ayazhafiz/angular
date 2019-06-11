@@ -20,11 +20,9 @@ import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
-
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
-
 
 
 export interface NgModuleAnalysis {
@@ -421,16 +419,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         if (!this.isClassDeclarationReference(entry)) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Value at position ${idx} in the NgModule.${arrayName}s of ${
-                  className} is not a class`);
+              `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a class`);
         }
         refList.push(entry);
       } else {
         // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            `Value at position ${idx} in the NgModule.${arrayName}s of ${
-                className} is not a reference: ${entry}`);
+            `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a reference: ${entry}`);
       }
     });
 

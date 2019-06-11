@@ -28,8 +28,6 @@ import {extractDirectiveMetadata, parseFieldArrayValue} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, unwrapExpression} from './util';
 
-
-
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
 
@@ -320,8 +318,8 @@ export class ComponentDecoratorHandler implements
       const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
       for (const {name, ref} of scope.compilation.pipes) {
         if (!ts.isClassDeclaration(ref.node)) {
-          throw new Error(`Unexpected non-class declaration ${
-              ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
+          throw new Error(
+              `Unexpected non-class declaration ${ts.SyntaxKind[ref.node.kind]} for pipe ${ref.debugName}`);
         }
         pipes.set(name, ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }

@@ -18,8 +18,6 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, validateConstructorDependencies} from './util';
 
-
-
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
   metadataStmt: Statement|null;

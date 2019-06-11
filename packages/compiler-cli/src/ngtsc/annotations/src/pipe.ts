@@ -20,8 +20,6 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
 
-
-
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
   metadataStmt: Statement|null;

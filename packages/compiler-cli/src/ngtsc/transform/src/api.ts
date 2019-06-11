@@ -8,11 +8,11 @@
 
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {Reexport} from '../../imports';
 import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
-
 
 export enum HandlerPrecedence {
   /**

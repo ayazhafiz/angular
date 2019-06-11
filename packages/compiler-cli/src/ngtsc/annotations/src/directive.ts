@@ -21,8 +21,6 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getValidConstructorDependencies, readBaseClass, unwrapExpression, unwrapForwardRef} from './util';
 
-
-
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
 export interface DirectiveHandlerData {
@@ -485,8 +483,7 @@ export function extractHostBindings(
 
       if (typeof key !== 'string') {
         throw new Error(
-            `Decorator host metadata must be a string -> string object, but found unparseable key ${
-                key}`);
+            `Decorator host metadata must be a string -> string object, but found unparseable key ${key}`);
       }
 
       if (typeof value == 'string') {
@@ -495,8 +492,7 @@ export function extractHostBindings(
         hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
       } else {
         throw new Error(
-            `Decorator host metadata must be a string -> string object, but found unparseable value ${
-                value}`);
+            `Decorator host metadata must be a string -> string object, but found unparseable value ${value}`);
       }
     });
   }

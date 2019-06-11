@@ -36,8 +36,6 @@ import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typeche
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
 
-
-
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
   private reuseTsProgram: ts.Program;
@@ -214,6 +212,7 @@ export class NgtscProgram implements api.Program {
     await Promise.all(this.tsProgram.getSourceFiles()
                           .filter(file => !file.fileName.endsWith('.d.ts'))
                           .map(file => {
+
                             const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
                             let analysisPromise = this.compilation !.analyzeAsync(file);
                             if (analysisPromise === undefined) {
@@ -240,8 +239,8 @@ export class NgtscProgram implements api.Program {
 
       // Relative entry paths are disallowed.
       if (entryRoute.startsWith('.')) {
-        throw new Error(`Failed to list lazy routes: Resolution of relative paths (${
-            entryRoute}) is not supported.`);
+        throw new Error(
+            `Failed to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`);
       }
 
       // Non-relative entry paths fall into one of the following categories:
