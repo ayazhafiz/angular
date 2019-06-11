@@ -6,26 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseTemplate} from '@angular/compiler';
 import {DirectiveMeta, R3TargetBinder, SelectorMatcher} from '@angular/compiler/src/compiler';
-import * as ts from 'typescript';
-import {ClassDeclaration} from '../../reflection';
 import {ComponentAnalysisContext} from '../src/context';
-
-function getComponentDeclaration(component: string): ClassDeclaration {
-  const sourceFile = ts.createSourceFile(
-      'TESTFILE', component, ts.ScriptTarget.ES2015,
-      /* setParentNodes */ true);
-
-  return sourceFile.statements.filter(ts.isClassDeclaration)[0] as ClassDeclaration;
-}
+import * as util from './util';
 
 describe('ComponentAnalysisContext', () => {
   it('should store and return information about components', () => {
     const context = new ComponentAnalysisContext();
-    const declaration = getComponentDeclaration('class C {};');
+    const declaration = util.getComponentDeclaration('class C {};');
     const selector = 'c-selector';
-    const template = parseTemplate('<div></div>', 'TESTFILE').nodes;
+    const template = util.getParsedTemplate('<div></div>');
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
     const scope = binder.bind({template});
 
