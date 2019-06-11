@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceFile, parseTemplate, TmplAstNode} from '@angular/compiler';
-import {getTemplateIdentifiers, TemplateIdentifier} from '../src/template';
+import {ParseSourceFile, TmplAstNode, parseTemplate} from '@angular/compiler';
+
+import {TemplateIdentifier, getTemplateIdentifiers} from '../src/template';
 
 
 

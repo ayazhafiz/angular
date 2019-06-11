@@ -48,9 +48,7 @@ export interface TemplateIdentifier extends Entity {
  * The visitor is stateless, taking an anonymous AST into its entry point.
  */
 class ExpressionVisitor implements AstVisitor {
-  visit(ast: AST): Entity[] {
-    return ast.visit(this);
-  }
+  visit(ast: AST): Entity[] { return ast.visit(this); }
 
   visitAll(asts: AST[], context: {}): Entity[] {
     return asts.reduce((references, ast) => references.concat(ast.visit(this, context)), []);
@@ -63,9 +61,7 @@ class ExpressionVisitor implements AstVisitor {
     ];
   }
 
-  visitChain(ast: Chain, context: {}): Entity[] {
-    return this.visitAll(ast.expressions, context);
-  }
+  visitChain(ast: Chain, context: {}): Entity[] { return this.visitAll(ast.expressions, context); }
 
   visitConditional(ast: Conditional, context: {}): Entity[] {
     return [
@@ -84,7 +80,7 @@ class ExpressionVisitor implements AstVisitor {
 
   visitFunctionCall(ast: FunctionCall, context: {}): Entity[] {
     return [
-      ast.target!.visit(this),
+      ast.target !.visit(this),
       this.visitAll(ast.args, context),
     ];
   }
@@ -131,9 +127,7 @@ class ExpressionVisitor implements AstVisitor {
     ];
   }
 
-  visitPrefixNot(ast: PrefixNot, context: {}): Entity[] {
-    return ast.expression.visit(this);
-  }
+  visitPrefixNot(ast: PrefixNot, context: {}): Entity[] { return ast.expression.visit(this); }
 
   visitNonNullAssert(ast: NonNullAssert, context: {}): Entity[] {
     return ast.expression.visit(this);
@@ -245,9 +239,7 @@ class TemplateVisitor implements Visitor {
     this.context.pop();
   }
 
-  visitAll(nodes: Node[]) {
-    nodes.forEach(node => this.visit(node));
-  }
+  visitAll(nodes: Node[]) { nodes.forEach(node => this.visit(node)); }
 
   visitElement(element: Element) {
     this.visitAll(element.attributes);
@@ -269,9 +261,7 @@ class TemplateVisitor implements Visitor {
   }
   visitBoundEvent(attribute: BoundEvent) {}
   visitText(text: Text) {}
-  visitBoundText(text: BoundText) {
-    this.addIdentifiers(this.astVisitor.visit(text.value), text);
-  }
+  visitBoundText(text: BoundText) { this.addIdentifiers(this.astVisitor.visit(text.value), text); }
   visitIcu(icu: Icu): void {}
 
   /**
