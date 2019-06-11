@@ -7,7 +7,7 @@
  */
 
 import {BoundTarget, DirectiveMeta, TmplAstNode} from '@angular/compiler';
-import {ClassDeclaration} from 'typescript';
+import {ClassDeclaration} from '../../reflection';
 
 /**
  * An intermediate representation of a component.
