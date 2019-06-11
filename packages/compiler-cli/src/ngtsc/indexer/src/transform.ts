@@ -7,8 +7,10 @@
  */
 
 import * as ts from 'typescript';
+
 import {ComponentAnalysisContext} from './context';
-import {TemplateIdentifier} from './template';
+import {TemplateIdentifier, getTemplateIdentifiers} from './template';
+
 
 /**
  * Describes the semantic analysis of a component and its template.
@@ -32,5 +34,50 @@ export interface ComponentAnalysis {
  * The context must be populated before `generateAnalysis` is called.
  */
 export function generateAnalysis(context: ComponentAnalysisContext): ComponentAnalysis[] {
-  throw new Error('Method not implemented.');
+  const componentMap = new Map<string, ComponentAnalysis>();
+
+  const components = context.components.map(component => {
+    const {declaration, selector, template, scope} = component;
+    const name = declaration.name.getText();
+
+    let usedComponents = null;
+    if (scope !== null) {
+      usedComponents = scope.getUsedDirectives().filter(dir => dir.isComponent);
+    }
+
+    const analysis = {
+      name,
+      selector,
+      declaration,
+      sourceFile: declaration.getSourceFile().fileName,
+      content: declaration.getSourceFile().getFullText(),
+      template: {
+        identifiers: getTemplateIdentifiers(template),
+        usedComponents: new Array<ComponentAnalysis>(),
+      },
+    };
+
+    componentMap.set(name, analysis);
+
+    return {
+      data: {
+          usedComponents,
+      },
+      analysis,
+    };
+  });
+
+  // Transform references to used components to their ComponentAnalysis forms.
+  // This must be done after all components are registered because there is no guarantee of
+  // component discovery order.
+  components.forEach(component => {
+    const usedComponents = component.data.usedComponents;
+    if (usedComponents !== null) {
+      const usages = usedComponents.map(component => componentMap.get(component.name))
+                         .filter((cmp): cmp is ComponentAnalysis => cmp !== undefined);
+      component.analysis.template.usedComponents = usages;
+    }
+  });
+
+  return components.map(component => component.analysis);
 }
