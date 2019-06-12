@@ -106,10 +106,6 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('method not implemented');
-  }
-
   compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {
     const res = compilePipeFromMetadata(analysis.meta);
     const statements = res.statements;

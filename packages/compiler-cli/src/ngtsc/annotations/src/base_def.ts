@@ -149,10 +149,6 @@ export class BaseDefDecoratorHandler implements
     return {analysis};
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, metadata: R3BaseRefDecoratorDetection) {
-    throw new Error('Method not implemented.');
-  }
-
   compile(node: ClassDeclaration, analysis: R3BaseRefMetaData, pool: ConstantPool):
       CompileResult[]|CompileResult {
     const {expression, type} = compileBaseDefFromMetadata(analysis, pool, makeBindingParser());

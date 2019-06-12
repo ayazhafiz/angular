@@ -208,10 +208,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     };
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('method not implemented');
-  }
-
   resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
     const scope = this.scopeRegistry.getScopeOfModule(node);
     const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;

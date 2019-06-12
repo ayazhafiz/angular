@@ -86,10 +86,6 @@ export class DirectiveDecoratorHandler implements
     };
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('Method not implemented.');
-  }
-
   compile(node: ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
       CompileResult {
     const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());

@@ -61,10 +61,6 @@ export class InjectableDecoratorHandler implements
     };
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('method not implemented');
-  }
-
   compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
     const res = compileIvyInjectable(analysis.meta);
     const statements = res.statements;

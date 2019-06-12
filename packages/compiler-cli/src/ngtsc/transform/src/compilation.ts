@@ -254,7 +254,7 @@ export class IvyCompilation {
   /**
    * Feeds components discovered in the compilation to a context for indexing.
    */
-  analyzeComponents(context: IndexingContext) { throw new Error('Method not implemented.'); }
+  index(context: IndexingContext) { throw new Error('Method not implemented.'); }
 
   resolve(): void {
     const resolveSpan = this.perf.start('resolve');

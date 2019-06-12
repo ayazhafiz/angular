@@ -6,24 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import {IndexedComponent} from './api';
 import {IndexingContext} from './context';
-import {TemplateIdentifier} from './template';
 
-/**
- * Describes an analyzed, indexed component and its template.
- */
-export interface IndexedComponent {
-  name: string;
-  selector: string|null;
-  declaration: ts.Declaration;
-  sourceFile: string;
-  content: string;
-  template: {
-    identifiers: TemplateIdentifier[],
-    usedComponents: IndexedComponent[],
-  };
-}
 
 /**
  * Generates `IndexedComponent` entries from a `IndexingContext`, which has information

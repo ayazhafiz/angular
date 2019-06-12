@@ -299,10 +299,6 @@ export class ComponentDecoratorHandler implements
     return output;
   }
 
-  index(context: IndexingContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('Method not implemented.');
-  }
-
   typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
     if (!ts.isClassDeclaration(node)) {
       return;
