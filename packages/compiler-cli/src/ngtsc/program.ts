@@ -427,7 +427,7 @@ export class NgtscProgram implements api.Program {
     return diagnostics;
   }
 
-  getIndexedComponent(): IndexedComponent[] { throw new Error('Method not implemented.'); }
+  getIndexedComponents(): IndexedComponent[] { throw new Error('Method not implemented.'); }
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
