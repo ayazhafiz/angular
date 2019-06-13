@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -106,11 +105,6 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
             clazz, this.reflector, this.defaultImportRecorder, this.isCore),
       },
     };
-  }
-
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('method not implemented');
   }
 
   compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {

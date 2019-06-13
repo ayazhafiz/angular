@@ -19,7 +19,8 @@ import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {IncrementalState} from './incremental';
-import {IndexedComponent} from './indexer';
+import {IndexedComponent, IndexingContext} from './indexer';
+import {generateAnalysis} from './indexer/src/transform';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, LocalMetadataRegistry, MetadataReader} from './metadata';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
@@ -428,7 +429,12 @@ export class NgtscProgram implements api.Program {
     return diagnostics;
   }
 
-  getIndexedComponents(): IndexedComponent[] { throw new Error('Method not implemented.'); }
+  getIndexedComponents(): IndexedComponent[] {
+    const compilation = this.ensureAnalyzed();
+    const context = new IndexingContext();
+    compilation.index(context);
+    return generateAnalysis(context);
+  }
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();

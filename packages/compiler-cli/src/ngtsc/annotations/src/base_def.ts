@@ -8,7 +8,6 @@
 
 import {ConstantPool, R3BaseRefMetaData, compileBaseDefFromMetadata, makeBindingParser} from '@angular/compiler';
 
-import {ComponentAnalysisContext} from '../../indexer';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
@@ -149,12 +148,6 @@ export class BaseDefDecoratorHandler implements
     }
 
     return {analysis};
-  }
-
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration,
-      metadata: R3BaseRefDecoratorDetection) {
-    throw new Error('Method not implemented.');
   }
 
   compile(node: ClassDeclaration, analysis: R3BaseRefMetaData, pool: ConstantPool):

@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {extractDirectiveGuards} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -86,11 +85,6 @@ export class DirectiveDecoratorHandler implements
             node, this.reflector, this.defaultImportRecorder, this.isCore),
       }
     };
-  }
-
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('Method not implemented.');
   }
 
   compile(node: ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):

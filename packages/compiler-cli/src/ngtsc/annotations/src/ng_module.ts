@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
-import {ComponentAnalysisContext} from '../../indexer';
 import {MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
@@ -207,11 +206,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       },
       factorySymbolName: node.name.text,
     };
-  }
-
-  registerDecorator(
-      context: ComponentAnalysisContext, node: ClassDeclaration, decorator: Decorator) {
-    throw new Error('method not implemented');
   }
 
   resolve(node: ClassDeclaration, analysis: NgModuleAnalysis): ResolveResult {
