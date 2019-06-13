@@ -8,6 +8,7 @@
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, Lexer, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSourceFile, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, TmplAstNode, TokenType} from '@angular/compiler';
 import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '@angular/compiler/src/render3/r3_ast';
+import {TemplateIdentifier} from './api';
 
 /**
  * A parsed node in a template, which may have a name (if it is a selector) or
@@ -25,16 +26,6 @@ interface Entity {
   name: string;
   span: ParseSpan;
 }
-
-/**
- * Describes a semantically-interesting identifier in a template, such as an interpolated variable
- * or selector.
- */
-export interface TemplateIdentifier extends Entity {
-  scope: string[];
-  file: ParseSourceFile;
-}
-
 
 /**
  * Visits the AST of an Angular template syntax expression, finding interesting

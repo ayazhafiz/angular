@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ComponentAnalysisContext} from './src/context';
-export {ComponentAnalysis, generateAnalysis} from './src/transform';
+export * from './src/api';
+export {IndexingContext} from './src/context';

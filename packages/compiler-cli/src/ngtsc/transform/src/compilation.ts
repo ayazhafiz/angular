@@ -12,7 +12,11 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
 import {IncrementalState} from '../../incremental';
+<<<<<<< HEAD
 import {ComponentAnalysisContext} from '../../indexer';
+=======
+import {IndexingContext} from '../../indexer';
+>>>>>>> feature/component-analysis
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
@@ -254,11 +258,17 @@ export class IvyCompilation {
   }
 
   /**
+<<<<<<< HEAD
    * Feeds components discovered in the compilation to a context for semantic analysis.
    */
   analyzeComponents(context: ComponentAnalysisContext, files: ts.SourceFile[]) {
     throw new Error('Method not implemented.');
   }
+=======
+   * Feeds components discovered in the compilation to a context for indexing.
+   */
+  index(context: IndexingContext) { throw new Error('Method not implemented.'); }
+>>>>>>> feature/component-analysis
 
   resolve(): void {
     const resolveSpan = this.perf.start('resolve');

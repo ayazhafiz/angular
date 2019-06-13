@@ -7,7 +7,7 @@
  */
 
 import {BoundTarget, DirectiveMeta} from '@angular/compiler';
-import {ComponentAnalysisContext} from '../src/context';
+import {IndexingContext} from '../src/context';
 import {getTemplateIdentifiers} from '../src/template';
 import {generateAnalysis} from '../src/transform';
 import * as util from './util';
@@ -16,7 +16,7 @@ import * as util from './util';
  * Adds information about a component to a context.
  */
 function populateContext(
-    context: ComponentAnalysisContext, component: string, selector: string, template: string,
+    context: IndexingContext, component: string, selector: string, template: string,
     scope: BoundTarget<DirectiveMeta>| null) {
   const declaration = util.getComponentDeclaration(component);
   const parsedTemplate = util.getParsedTemplate(template);
@@ -25,7 +25,7 @@ function populateContext(
 
 describe('generateAnalysis', () => {
   it('should emit analysis information', () => {
-    const context = new ComponentAnalysisContext();
+    const context = new IndexingContext();
     populateContext(context, 'class C {};', 'c-selector', '<div>{{foo}}</div>', null);
     const analysis = generateAnalysis(context);
 
@@ -43,7 +43,7 @@ describe('generateAnalysis', () => {
   });
 
   it('should emit used components', () => {
-    const context = new ComponentAnalysisContext();
+    const context = new IndexingContext();
 
     const templateA = '<b-selector></b-selector>';
     const scopeA = util.bindTemplate(templateA, [{selector: 'b-selector', name: 'B'}]);

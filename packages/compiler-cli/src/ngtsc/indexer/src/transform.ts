@@ -6,35 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
+import {IndexedComponent} from './api';
+import {IndexingContext} from './context';
+import {getTemplateIdentifiers} from './template';
 
-import {ComponentAnalysisContext} from './context';
-import {TemplateIdentifier, getTemplateIdentifiers} from './template';
-
-
-/**
- * Describes the semantic analysis of a component and its template.
- */
-export interface ComponentAnalysis {
-  name: string;
-  selector: string|null;
-  declaration: ts.Declaration;
-  sourceFile: string;
-  content: string;
-  template: {
-    identifiers: TemplateIdentifier[],
-    usedComponents: ComponentAnalysis[],
-  };
-}
 
 /**
- * Generates `ComponentAnalysis` entries from a `ComponentAnalysisContext`, which has information
+ * Generates `IndexedComponent` entries from a `IndexingContext`, which has information
  * about components discovered in the program registered in it.
  *
  * The context must be populated before `generateAnalysis` is called.
  */
-export function generateAnalysis(context: ComponentAnalysisContext): ComponentAnalysis[] {
-  const componentMap = new Map<string, ComponentAnalysis>();
+export function generateAnalysis(context: IndexingContext): IndexedComponent[] {
+  const componentMap = new Map<string, IndexedComponent>();
 
   const components = context.components.map(component => {
     const {declaration, selector, template, scope} = component;
@@ -53,7 +37,7 @@ export function generateAnalysis(context: ComponentAnalysisContext): ComponentAn
       content: declaration.getSourceFile().getFullText(),
       template: {
         identifiers: getTemplateIdentifiers(template),
-        usedComponents: new Array<ComponentAnalysis>(),
+        usedComponents: new Array<IndexedComponent>(),
       },
     };
 
@@ -67,14 +51,14 @@ export function generateAnalysis(context: ComponentAnalysisContext): ComponentAn
     };
   });
 
-  // Transform references to used components to their ComponentAnalysis forms.
+  // Transform references to used components to their IndexedComponent forms.
   // This must be done after all components are registered because there is no guarantee of
   // component discovery order.
   components.forEach(component => {
     const usedComponents = component.data.usedComponents;
     if (usedComponents !== null) {
       const usages = usedComponents.map(component => componentMap.get(component.name))
-                         .filter((cmp): cmp is ComponentAnalysis => cmp !== undefined);
+                         .filter((cmp): cmp is IndexedComponent => cmp !== undefined);
       component.analysis.template.usedComponents = usages;
     }
   });

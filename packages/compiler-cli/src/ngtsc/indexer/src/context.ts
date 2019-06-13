@@ -33,7 +33,7 @@ export interface ComponentInfo {
  * Stores analysis information about components in a compilation for and provides methods for
  * querying information about components.
  */
-export class ComponentAnalysisContext {
+export class IndexingContext {
   private readonly registry: ComponentInfo[] = [];
 
   addComponent(

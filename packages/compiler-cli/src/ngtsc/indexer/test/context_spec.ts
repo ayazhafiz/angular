@@ -7,12 +7,12 @@
  */
 
 import {DirectiveMeta, R3TargetBinder, SelectorMatcher} from '@angular/compiler/src/compiler';
-import {ComponentAnalysisContext} from '../src/context';
+import {IndexingContext} from '../src/context';
 import * as util from './util';
 
 describe('ComponentAnalysisContext', () => {
   it('should store and return information about components', () => {
-    const context = new ComponentAnalysisContext();
+    const context = new IndexingContext();
     const declaration = util.getComponentDeclaration('class C {};');
     const selector = 'c-selector';
     const template = util.getParsedTemplate('<div></div>');

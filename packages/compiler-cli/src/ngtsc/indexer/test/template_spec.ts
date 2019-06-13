@@ -8,7 +8,8 @@
 
 import {ParseSourceFile, TmplAstNode, parseTemplate} from '@angular/compiler';
 
-import {TemplateIdentifier, getTemplateIdentifiers} from '../src/template';
+import {TemplateIdentifier} from '../src/api';
+import {getTemplateIdentifiers} from '../src/template';
 
 
 
