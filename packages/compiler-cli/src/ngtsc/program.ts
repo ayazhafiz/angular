@@ -37,8 +37,6 @@ import {TypeCheckContext, TypeCheckingConfig, typeCheckFilePath} from './typeche
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath, resolveModuleName} from './util/src/typescript';
 
-
-
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
   private reuseTsProgram: ts.Program;

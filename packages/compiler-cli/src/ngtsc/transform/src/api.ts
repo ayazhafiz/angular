@@ -13,7 +13,6 @@ import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
-
 export enum HandlerPrecedence {
   /**
    * Handler with PRIMARY precedence cannot overlap - there can only be one on a given class.

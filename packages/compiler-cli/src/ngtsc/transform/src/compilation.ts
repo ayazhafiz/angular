@@ -22,8 +22,6 @@ import {getSourceFile} from '../../util/src/typescript';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
 import {DtsFileTransformer} from './declaration';
 
-
-
 const EMPTY_ARRAY: any = [];
 
 /**
