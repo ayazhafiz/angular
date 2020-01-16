@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Directive, EventEmitter, Input, Output, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {Hero} from './app.component';
 
@@ -50,6 +50,11 @@ export class NoValueAttribute {
 export class StringModel {
   @Input() model: string = 'model';
   @Output() modelChange: EventEmitter<string> = new EventEmitter();
+}
+
+@Directive({selector: '[appUnless]'})
+export class UnlessDirective {
+  constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef, ) {}
 }
 
 @Directive({

@@ -116,6 +116,20 @@ describe('hover', () => {
     expect(toText(displayParts)).toBe('(directive) StringModel: typeof StringModel');
   });
 
+  it('should be able to find a reference to a directive', () => {
+    const fileName = mockHost.addCode(`
+      @Component({
+        template: '<test-comp *«appUnless»="let ele;"></test-comp>'
+      })
+      export class MyComponent { }`);
+    const marker = mockHost.getReferenceMarkerFor(fileName, 'appUnless');
+    const quickInfo = ngLS.getHoverAt(fileName, marker.start);
+    expect(quickInfo).toBeTruthy();
+    const {textSpan, displayParts} = quickInfo !;
+    expect(textSpan).toEqual(marker);
+    expect(toText(displayParts)).toBe('(directive) StringModel: typeof StringModel');
+  });
+
   it('should be able to find an event provider', () => {
     const fileName = mockHost.addCode(`
       @Component({
