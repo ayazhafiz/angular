@@ -1567,6 +1567,7 @@ class TcbExpressionTranslator {
       // property read or method call on the component context itself.
       return ts.createIdentifier('ctx');
     } else if (ast instanceof BindingPipe) {
+      debugger;
       const expr = this.translate(ast.exp);
       let pipe: ts.Expression|null;
       if (this.tcb.env.config.checkTypeOfPipes) {

@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {TemplateId} from '../api';
-import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
+import {makeTemplateDiagnostic, TemplateDiagnostic, UniqueDiagnosticCollector, UniqueDiagnostics} from '../diagnostics';
 
 import {TemplateSourceResolver} from './diagnostics';
 
@@ -27,12 +27,12 @@ const REMOVE_XHTML_REGEX = /^:xhtml:/;
  * collector for these diagnostics, and can be queried later to retrieve the list of any that have
  * been generated.
  */
-export interface DomSchemaChecker {
+export interface DomSchemaChecker extends UniqueDiagnosticCollector {
   /**
    * Get the `ts.Diagnostic`s that have been generated via `checkElement` and `checkProperty` calls
    * thus far.
    */
-  readonly diagnostics: ReadonlyArray<TemplateDiagnostic>;
+  readonly diagnostics: UniqueDiagnostics;
 
   /**
    * Check a non-Angular element and record any diagnostics about it.
@@ -64,14 +64,11 @@ export interface DomSchemaChecker {
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
  * maintained by the Angular team via extraction from a browser IDL.
  */
-export class RegistryDomSchemaChecker implements DomSchemaChecker {
-  private _diagnostics: TemplateDiagnostic[] = [];
-
-  get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
-    return this._diagnostics;
+export class RegistryDomSchemaChecker extends UniqueDiagnosticCollector implements
+    DomSchemaChecker {
+  constructor(private resolver: TemplateSourceResolver) {
+    super();
   }
-
-  constructor(private resolver: TemplateSourceResolver) {}
 
   checkElement(id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[]): void {
     // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
@@ -96,7 +93,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       const diag = makeTemplateDiagnostic(
           id, mapping, element.startSourceSpan, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT), errorMsg);
-      this._diagnostics.push(diag);
+      this.pushDiagnostic(diag);
     }
   }
 
@@ -126,7 +123,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       const diag = makeTemplateDiagnostic(
           id, mapping, span, ts.DiagnosticCategory.Error,
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
-      this._diagnostics.push(diag);
+      this.pushDiagnostic(diag);
     }
   }
 }

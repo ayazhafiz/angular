@@ -86,7 +86,9 @@ export class Environment {
         },
         coercedInputFields: dir.coercedInputFields,
       };
+      debugger;
       const typeParams = this.emitTypeParameters(node);
+      debugger;
       const typeCtor = generateTypeCtorDeclarationFn(
           node, meta, nodeTypeRef.typeName, typeParams, this.reflector);
       this.typeCtorStatements.push(typeCtor);

@@ -126,3 +126,35 @@ export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is T
   return diagnostic.hasOwnProperty('componentFile') &&
       ts.isSourceFile((diagnostic as any).componentFile);
 }
+
+type DiagnosticHash = string&{__hashBrand: 'hash'};
+
+function hashDiagnostic(diag: TemplateDiagnostic): DiagnosticHash {
+  return `${diag.file}@${diag.start}-${diag.length}:${diag.code}` as DiagnosticHash;
+}
+
+export type UniqueDiagnostics = ReadonlyArray<TemplateDiagnostic>&{__uniqBrand: 'uniq'};
+
+/**
+ * Collects `TemplateDiagnostic`s with the guarantee that all diagnostics are
+ * unique; i.e. no two diagnostics are duplicate.
+ *
+ * Two diagnostics are duplicates iff they cover the same range in a file, and
+ * have the same diagnostic code.
+ */
+export class UniqueDiagnosticCollector {
+  private seenDiagnostics = new Set<DiagnosticHash>();
+  private _diagnostics: TemplateDiagnostic[] = [];
+
+  get diagnostics(): UniqueDiagnostics {
+    return this._diagnostics as ReadonlyArray<TemplateDiagnostic>as UniqueDiagnostics;
+  }
+
+  pushDiagnostic(diag: TemplateDiagnostic) {
+    const hash = hashDiagnostic(diag);
+    if (!this.seenDiagnostics.has(hash)) {
+      this._diagnostics.push(diag);
+      this.seenDiagnostics.add(hash);
+    }
+  }
+}

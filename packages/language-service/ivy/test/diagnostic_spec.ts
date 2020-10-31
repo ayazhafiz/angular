@@ -72,4 +72,15 @@ describe('getSemanticDiagnostics', () => {
     expect(d2.length).toBe(1);
     expect(d2[0].messageText).toBe(`Property 'bar' does not exist on type 'TemplateReference'.`);
   });
+
+  fit('should not show same diagnostic more than once', () => {
+    const {text} = service.overwriteInlineTemplate(APP_COMPONENT, `
+      <p *ngFor="let char of title | upperCase"></p>
+    `);
+    debugger;
+    const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+    console.error(text);
+    console.error(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n')));
+    expect(diags.length).toBe(1);
+  });
 });

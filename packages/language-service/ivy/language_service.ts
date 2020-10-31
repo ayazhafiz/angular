@@ -40,7 +40,9 @@ export class LanguageService {
       const program = compiler.getNextProgram();
       const sourceFile = program.getSourceFile(fileName);
       if (sourceFile) {
-        diagnostics.push(...ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile));
+        debugger;
+        const diags = ttc.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
+        diagnostics.push(...diags);
       }
     } else {
       const components = compiler.getComponentsWithTemplateFile(fileName);
