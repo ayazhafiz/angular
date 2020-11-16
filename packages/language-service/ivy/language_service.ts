@@ -10,10 +10,13 @@ import {CompilerOptions, createNgCompilerOptions} from '@angular/compiler-cli';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
+import * as t from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {CompilerFactory} from './compiler_factory';
 import {DefinitionBuilder} from './definitions';
+import {printDesugaredTemplate} from './desugar';
 import {LanguageServiceAdapter} from './language_service_adapter';
 import {QuickInfoBuilder} from './quick_info';
 import {getTargetAtPosition} from './template_target';
@@ -21,6 +24,8 @@ import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export type GetTcbResponse = {
   content: string,
+  start: number,
+  end: number,
 }|{
   error: string,
 };
@@ -110,9 +115,36 @@ export class LanguageService {
         error: 'Could not find typecheck block for template',
       };
 
+    let start = 0, end = 0;
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails !== null) {
+      const span = positionDetails.node.sourceSpan;
+      const node = findFirstMatchingNode(
+          tcb, {withSpan: span, filter: (_node: ts.Node): _node is ts.Node => true});
+
+      if (node !== null) {
+        start = node.getFullStart() - tcb.getFullStart();
+        end = node.getEnd() - tcb.getFullStart();
+      }
+    }
+
     return {
-      content: tcb.getFullText().trim(),
+      content: tcb.getFullText(),
+      start,
+      end,
     };
+  }
+
+  getDesugaredTemplate(fileName: string, position: number): string|undefined {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined) return;
+    const positionDetails = getTargetAtPosition(templateInfo.template, position);
+    if (positionDetails === null) return;
+    const templateNode = (positionDetails.node instanceof t.Template) ? positionDetails.node :
+                                                                        positionDetails.context;
+    if (templateNode === null) return;
+    return printDesugaredTemplate(templateNode);
   }
 
   private watchConfigFile(project: ts.server.Project) {

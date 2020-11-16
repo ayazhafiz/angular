@@ -11,6 +11,7 @@ import {GetTcbResponse, LanguageService} from './language_service';
 
 type NgLanguageService = ts.LanguageService&{
   getTcb(fileName: string, position: number): GetTcbResponse,
+      getDesugaredTemplate(fileName: string, position: number): string|undefined,
 }
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
@@ -64,6 +65,10 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getTcb(fileName, position);
   }
 
+  function getDesugaredTemplate(fileName: string, position: number): string|undefined {
+    return ngLS.getDesugaredTemplate(fileName, position);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -71,5 +76,6 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getQuickInfoAtPosition,
     getDefinitionAndBoundSpan,
     getTcb,
+    getDesugaredTemplate,
   };
 }
