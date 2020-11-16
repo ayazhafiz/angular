@@ -19,6 +19,12 @@ import {QuickInfoBuilder} from './quick_info';
 import {getTargetAtPosition} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
+export type GetTcbResponse = {
+  content: string,
+}|{
+  error: string,
+};
+
 export class LanguageService {
   private options: CompilerOptions;
   private readonly compilerFactory: CompilerFactory;
@@ -89,6 +95,24 @@ export class LanguageService {
             .get();
     this.compilerFactory.registerLastKnownProgram();
     return results;
+  }
+
+  getTcb(fileName: string, position: number): GetTcbResponse {
+    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName, this.options);
+    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+    if (templateInfo === undefined)
+      return {
+        error: 'Could not find template under cursor position',
+      };
+    const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(templateInfo.component);
+    if (tcb === null)
+      return {
+        error: 'Could not find typecheck block for template',
+      };
+
+    return {
+      content: tcb.getFullText().trim(),
+    };
   }
 
   private watchConfigFile(project: ts.server.Project) {
